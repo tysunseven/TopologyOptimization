@@ -1,0 +1,8 @@
+title: Software
+author: Marcus Aßmus
+description: software for the visualisation of elastic anisotropy
+logo: logo.png
+show_downloads: true
+theme: jekyll-theme-minimal
+baseurl: "/visualising-elastic-anisotropy"
+url: "https://marcusassmus.github.io"
