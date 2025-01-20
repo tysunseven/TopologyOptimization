@@ -1,0 +1,58 @@
+This is BibTeX, Version 0.99d (TeX Live 2023)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: Review of Multiphysics.aux
+The style file: plain.bst
+Database file #1: multiphysics.bib
+Illegal end of database file---line 567 of file multiphysics.bib
+ : 
+ : 
+(Error may have been on previous line)
+I'm skipping whatever remains of this entry
+Warning--to sort, need author or key in zheng_deep_2023
+Warning--empty author in zheng_deep_2023
+Warning--empty journal in zheng_deep_2023
+Warning--empty year in zheng_deep_2023
+Warning--empty journal in nie_topologygan_nodate
+Warning--empty year in nie_topologygan_nodate
+You've used 30 entries,
+            2118 wiz_defined-function locations,
+            685 strings with 11104 characters,
+and the built_in function-call counts, 11755 in all, are:
+= -- 1085
+> -- 761
+< -- 0
++ -- 303
+- -- 270
+* -- 1066
+:= -- 2034
+add.period$ -- 92
+call.type$ -- 30
+change.case$ -- 225
+chr.to.int$ -- 0
+cite$ -- 36
+duplicate$ -- 330
+empty$ -- 773
+format.name$ -- 270
+if$ -- 2299
+int.to.chr$ -- 0
+int.to.str$ -- 30
+missing$ -- 29
+newline$ -- 153
+num.names$ -- 58
+pop$ -- 191
+preamble$ -- 1
+purify$ -- 195
+quote$ -- 0
+skip$ -- 208
+stack$ -- 0
+substring$ -- 707
+swap$ -- 28
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 120
+warning$ -- 6
+while$ -- 94
+width$ -- 32
+write$ -- 329
+(There was 1 error message)

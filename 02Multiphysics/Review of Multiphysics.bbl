@@ -1,0 +1,199 @@
+\begin{thebibliography}{10}
+
+\bibitem{zheng_deep_2023}
+Deep {Learning} in {Mechanical} {Metamaterials}: {From} {Prediction} and
+  {Generation} to {Inverse} {Design}.
+\newblock 35.
+
+\bibitem{chen_metamaterials_2023}
+Ji~Chen, Shanshan Hu, Shining Zhu, and Tao Li.
+\newblock Metamaterials: {From} fundamental physics to intelligent design.
+\newblock {\em Interdisciplinary Materials}, 2(1):5--29, January 2023.
+
+\bibitem{guo_indirect_2018}
+Tinghao Guo, Danny~J. Lohan, Ruijin Cang, Max~Yi Ren, and James~T. Allison.
+\newblock An {Indirect} {Design} {Representation} for {Topology} {Optimization}
+  {Using} {Variational} {Autoencoder} and {Style} {Transfer}.
+\newblock In {\em 2018 {AIAA}/{ASCE}/{AHS}/{ASC} {Structures}, {Structural}
+  {Dynamics}, and {Materials} {Conference}}, Kissimmee, Florida, January 2018.
+  American Institute of Aeronautics and Astronautics.
+\newblock TLDR: The new non-dominated points obtained via the VAE
+  representation were found and compared with the known attainable set,
+  indicating that use of this new design representation can simultaneously
+  improve computational efficiency and solution quality.
+
+\bibitem{jiao_mechanical_2023}
+Pengcheng Jiao, Jochen Mueller, Jordan~R. Raney, Xiaoyu Zheng, and Amir~H.
+  Alavi.
+\newblock Mechanical metamaterials and beyond.
+\newblock {\em Nature Communications}, 14(1):6004, September 2023.
+
+\bibitem{kazemi_topology_2022}
+Hesaneh Kazemi, Carolyn Seepersad, and H.~Alicia Kim.
+\newblock Topology {Optimization} {Integrated} {Deep} {Learning} for
+  {Multiphysics} {Problems}.
+\newblock In {\em {AIAA} {SCITECH} 2022 {Forum}}, San Diego, CA \& Virtual,
+  January 2022. American Institute of Aeronautics and Astronautics.
+
+\bibitem{lee_data-driven_2024}
+Doksoo Lee, Wei~Wayne Chen, Liwei Wang, Yu-Chin Chan, and Wei Chen.
+\newblock Data-{Driven} {Design} for {Metamaterials} and {Multiscale}
+  {Systems}: {A} {Review}.
+\newblock {\em Advanced Materials}, 36(8):2305254, February 2024.
+
+\bibitem{levine_materials_2021}
+David~J. Levine, Kevin~T. Turner, and James~H. Pikul.
+\newblock Materials with {Electroprogrammable} {Stiffness}.
+\newblock {\em Advanced Materials}, 33(35):2007952, September 2021.
+
+\bibitem{li_algorithmic_2023}
+Weichen Li, Yue Wang, Tian Chen, and Xiaojia~Shelly Zhang.
+\newblock Algorithmic encoding of adaptive responses in temperature-sensing
+  multimaterial architectures.
+\newblock {\em Science Advances}, 9(47):eadk0620, November 2023.
+
+\bibitem{nie_topologygan_nodate}
+Zhenguo Nie, Tong Lin, Haoliang Jiang, and Levent~Burak Kara.
+\newblock {TopologyGAN}: {Topology} {Optimization} {Using} {Generative}
+  {Adversarial} {Networks} {Based} on {Physical} {Fields} {Over} the {Initial}
+  {Domain}.
+
+\bibitem{parrott_multidisciplinary_2023}
+Corey~M. Parrott, Diab~W. Abueidda, and Kai~A. James.
+\newblock Multidisciplinary {Topology} {Optimization} {Using} {Generative}
+  {Adversarial} {Networks} for {Physics}-{Based} {Design} {Enhancement}.
+\newblock {\em Journal of Mechanical Design}, 145(6):061704, June 2023.
+
+\bibitem{rawat_novel_2019}
+Sharad Rawat and M.-H.~Herman Shen.
+\newblock A {Novel} {Topology} {Optimization} {Approach} using {Conditional}
+  {Deep} {Learning}, January 2019.
+\newblock arXiv:1901.04859.
+
+\bibitem{sigmund_composites_1996}
+O.~Sigmund and S.~Torquato.
+\newblock Composites with extremal thermal expansion coefficients.
+\newblock {\em Applied Physics Letters}, 69(21):3203--3205, November 1996.
+
+\bibitem{sigmund_materials_1994}
+Ole Sigmund.
+\newblock Materials with prescribed constitutive parameters: {An} inverse
+  homogenization problem.
+\newblock {\em International Journal of Solids and Structures},
+  31(17):2313--2329, September 1994.
+
+\bibitem{singh_voltage-dependent_2021}
+A.~Singh, T.~Mukhopadhyay, S.~Adhikari, and B.~Bhattacharya.
+\newblock Voltage-dependent modulation of elastic moduli in lattice
+  metamaterials: {Emergence} of a programmable state-transition capability.
+\newblock {\em International Journal of Solids and Structures}, 208-209:31--48,
+  January 2021.
+
+\bibitem{sinha_programmable_2023}
+P.~Sinha and T.~Mukhopadhyay.
+\newblock Programmable multi-physical mechanics of mechanical metamaterials.
+\newblock {\em Materials Science and Engineering: R: Reports}, 155:100745,
+  October 2023.
+
+\bibitem{tao_4d_2020}
+Ran Tao, Longtao Ji, Ying Li, Zhishuai Wan, Wenxia Hu, Wenwang Wu, Binbin Liao,
+  Lianhua Ma, and Daining Fang.
+\newblock {4D} printed origami metamaterials with tunable compression twist
+  behavior and stress-strain curves.
+\newblock {\em Composites Part B: Engineering}, 201:108344, November 2020.
+
+\bibitem{torquato_multifunctional_2002}
+S.~Torquato, S.~Hyun, and A.~Donev.
+\newblock Multifunctional {Composites}: {Optimizing} {Microstructures} for
+  {Simultaneous} {Transport} of {Heat} and {Electricity}.
+\newblock {\em Physical Review Letters}, 89(26):266601, December 2002.
+\newblock TLDR: This work maximizes the simultaneous transport of heat and
+  electricity in three-dimensional, two-phase composites using rigorous
+  optimization techniques and discovers that the optimal three- dimensional
+  structures are bicontinuous triply periodic minimal surfaces.
+
+\bibitem{wang_inverse_2023}
+Chao Wang, Zhi Zhao, and Xiaojia~Shelly Zhang.
+\newblock Inverse design of magneto-active metasurfaces and robots: {Theory},
+  computation, and experimental validation.
+\newblock {\em Computer Methods in Applied Mechanics and Engineering},
+  413:116065, August 2023.
+
+\bibitem{wang_mechanical_2022}
+Liwei Wang, Jagannadh Boddapati, Ke~Liu, Ping Zhu, Chiara Daraio, and Wei Chen.
+\newblock Mechanical cloak via data-driven aperiodic metamaterial design.
+\newblock {\em PNAS}, 119(13):e2122185119, March 2022.
+
+\bibitem{wang_level-set_2004}
+Xiaoming Wang, Yulin Mei, and Michael~Yu Wang.
+\newblock Level-set method for design of multi-phase elastic and thermoelastic
+  materials.
+\newblock {\em International Journal of Mechanics and Materials in Design},
+  1(3):213--239, September 2004.
+
+\bibitem{wang_thermal_2024}
+Yihui Wang, Wei Sha, Mi~Xiao, and Liang Gao.
+\newblock Thermal {Metamaterials} with {Configurable} {Mechanical}
+  {Properties}.
+\newblock {\em Advanced Science}, 11(40):2406116, October 2024.
+
+\bibitem{wegener_metamaterials_2013}
+Martin Wegener.
+\newblock Metamaterials {Beyond} {Optics}.
+\newblock {\em Science}, 342(6161):939--940, November 2013.
+
+\bibitem{yang_4d_2019}
+Chen Yang, Manish Boorugu, Andrew Dopp, Jie Ren, Raymond Martin, Daehoon Han,
+  Wonjoon Choi, and Howon Lee.
+\newblock {4D} printing reconfigurable, deployable and mechanically tunable
+  metamaterials.
+\newblock {\em Materials Horizons}, 6(6):1244--1250, 2019.
+
+\bibitem{yu_deep_2019}
+Yonggyun Yu, Taeil Hur, Jaeho Jung, and In~Gwun Jang.
+\newblock Deep learning for determining a near-optimal topological design
+  without any iteration.
+\newblock {\em Structural and Multidisciplinary Optimization}, 59(3):787--799,
+  March 2019.
+
+\bibitem{zhang_diffusion_2023}
+Zeren Zhang, Liujun Xu, Teng Qu, Min Lei, Zhi-Kang Lin, Xiaoping Ouyang,
+  Jian-Hua Jiang, and Jiping Huang.
+\newblock Diffusion metamaterials.
+\newblock {\em Nature Reviews Physics}, 5(4):218--235, March 2023.
+
+\bibitem{zhao_scalable_2023}
+Xinpeng Zhao, Yu~Liu, Liuxian Zhao, Amirhossein Yazdkhasti, Yimin Mao,
+  Amanda~Pia Siciliano, Jiaqi Dai, Shuangshuang Jing, Hua Xie, Zhihan Li,
+  Shuaiming He, Bryson~Callie Clifford, Jianguo Li, Grace~S. Chen, Emily~Q.
+  Wang, Andre Desjarlais, Daniel Saloni, Miao Yu, Jan Kośny, J.~Y. Zhu, Amy
+  Gong, and Liangbing Hu.
+\newblock A scalable high-porosity wood for sound absorption and thermal
+  insulation.
+\newblock {\em Nature Sustainability}, 6(3):306--315, January 2023.
+
+\bibitem{zhao_topology_2022}
+Zhi Zhao and Xiaojia~Shelly Zhang.
+\newblock Topology optimization of hard-magnetic soft materials.
+\newblock {\em Journal of the Mechanics and Physics of Solids}, 158:104628,
+  January 2022.
+
+\bibitem{zhu_inverse_2021}
+Zhan Zhu, Xuecheng Ren, Wei Sha, Mi~Xiao, Run Hu, and Xiaobing Luo.
+\newblock Inverse design of rotating metadevice for adaptive thermal cloaking.
+\newblock {\em International Journal of Heat and Mass Transfer}, 176:121417,
+  September 2021.
+
+\bibitem{zhu_field-coupling_2023}
+Zhan Zhu, Zhaochen Wang, Tianfeng Liu, Xiaobing Luo, Chengwei Qiu, and Run Hu.
+\newblock Field-coupling topology design of general transformation multiphysics
+  metamaterials with different functions and arbitrary shapes.
+\newblock {\em Cell Reports Physical Science}, 4(8):101540, August 2023.
+
+\bibitem{alvarez_hostos_computational_2021}
+Juan~C. Álvarez Hostos, Víctor~D. Fachinotti, and Ignacio Peralta.
+\newblock Computational design of thermo-mechanical metadevices using topology
+  optimization.
+\newblock {\em Applied Mathematical Modelling}, 90:758--776, February 2021.
+
+\end{thebibliography}
