@@ -1,8 +1,11 @@
 % 参数设置
+beta = 3;
 nelx = 100;  % x方向网格数
 nely = 50;  % y方向网格数
 rho1 = 1.225;  % 空气的密度1.225kg/m^3
+rhov = rho1 * 10^(beta-1);
 kappa1 = 141834.999;  % 空气的体积模量
+kappav = kappa1*10^beta;
 xi = ones(nely, nelx);
 
 %% PREPARE FINITE ELEMENT ANALYSIS
@@ -17,8 +20,8 @@ ME = 1/36*[4 2 1 2;
     2 1 2 4];
 
 nodenrs = reshape(1:(1+nelx)*(1+nely),1+nely,1+nelx); % 给(nely+1)*(nelx+1)个节点编号
-edofVec = reshape(nodenrs(1:end-1,1:end-1)+1,nelx*nely,1); % 记录每个单元的左下节点的编号
-edofMat = repmat(edofVec,1,4)+repmat([0 nely+1 nely -1],nelx*nely,1); % 记录每个单元的四个节点的编号
+edofVec = reshape(nodenrs(1:end-1,1:end-1)+nely+1,nelx*nely,1); % 记录每个单元的右上节点的编号
+edofMat = repmat(edofVec,1,4)+repmat([0 -nely-1 -nely 1],nelx*nely,1); % 记录每个单元的四个节点的编号
 
 iIndex = reshape(kron(edofMat,ones(4,1))',16*nelx*nely,1);
 jIndex = reshape(kron(edofMat,ones(1,4))',16*nelx*nely,1);
