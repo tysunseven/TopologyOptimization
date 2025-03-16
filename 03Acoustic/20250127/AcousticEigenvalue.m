@@ -67,3 +67,40 @@ top10 = sorted_frequencies(1:10)/50;
 disp('理论特征频率 (Hz):');
 disp(top10);
 
+% % 参数设置
+% Lx = 2;
+% Ly = 1;
+% rho = 1.225;
+% c = 340.27;
+% 
+% % 循环n和m
+% for n = 1:4
+%     for m = 1:4
+%         % 计算a和b
+%         a = n * pi / Lx;
+%         b = m * pi / Ly;
+% 
+%         % 计算频率f
+%         f = c / (2 * sqrt((n / Lx)^2 + (m / Ly)^2));
+% 
+%         % 生成网格
+%         x = linspace(0, 2, 201);
+%         y = linspace(0, 1, 101);
+%         [X, Y] = meshgrid(x, y);
+% 
+%         % 计算声压分布
+%         p = cos(a * X) .* cos(b * Y);
+% 
+%         % 绘制图像
+%         imagesc(p);
+%         colormap(jet);
+%         axis equal;
+%         axis off;
+% 
+%         % 文件命名
+%         filename = sprintf('Lx=%.2f_Ly=%.2f_rho=%.2f_c=%.2f_n=%d_m=%d_f=%.2f.png', Lx, Ly, rho, c, n, m, f);
+% 
+%         % 保存图像
+%         saveas(gcf, filename);
+%     end
+% end

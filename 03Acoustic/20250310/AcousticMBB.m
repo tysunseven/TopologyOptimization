@@ -13,6 +13,8 @@ rhoav = rhoa*10^(alpha-1); % 搭配气体的虚拟的密度
 
 q = 1; % RAMP插值的参数
 omega = 2;
+k = 2; % 似乎是波数，等于omega/c_a
+pin = 1000;
 
 %% 设计变量的初始化
 nelxs = 25;
@@ -50,6 +52,14 @@ iIndexaa = reshape(kron(edofMata,ones(4,1))',16*nelx*nely,1);
 jIndexaa = reshape(kron(edofMata,ones(1,4))',16*nelx*nely,1);
 % 以上这部分在纯声学计算特征频率的代码中用过，所以应该是没错的
 
+Mle = 1/6*[2 0 0 1;0 0 0 0;0 0 0 0;1 0 0 2];
+Mre = 1/6*[0 0 0 0;0 2 1 0;0 1 2 0;0 0 0 0];
+iIndexl = reshape(kron(edofMata(1:nely, :),ones(4,1))',16*nely,1);
+jIndexl = reshape(kron(edofMata(1:nely, :),ones(1,4))',16*nely,1);
+iIndexr = reshape(kron(edofMata((nelx-1)*nely+1:nelx*nely, :),ones(4,1))',16*nely,1);
+jIndexr = reshape(kron(edofMata((nelx-1)*nely+1:nelx*nely, :),ones(1,4))',16*nely,1);
+% 这部分比较简单，感觉不会错
+
 % 纯力学部分
 A11 = [12  3 -6 -3;  3 12  3  0; -6  3 12 -3; -3  0 -3 12];
 A12 = [-6 -3  0  3; -3 -6 -3 -6;  0 -3 -6  3;  3 -6  3 -6];
@@ -71,9 +81,13 @@ Spe = [-2 0 0 -1; -2 -1 0 0; 0 2 1 0; -1 -2 0 0; 0 1 2 0; 0 0 2 1; -1 0 0 -2; 0 
 Sue = Spe';
 % 这部分仔细检查验算了，应该是对的
 
-iIndexsa = reshape(kron(edofMats,ones(4,1))',32*nelxs*nely,1);
-jIndexsa = reshape(kron(edofMata,ones(1,8))',32*nelxs*nely,1);
-% 感觉应该是要把edofMata改成中间需要的一些行
+% 给Sp用的行列指标
+iIndexp = reshape(kron(edofMats,ones(4,1))',32*nelxs*nely,1);
+jIndexp = reshape(kron(edofMata(4*nelxs*nely+1:5*nelxs*nely, :),ones(1,8))',32*nelxs*nely,1);
+% 给Su用的行列指标
+iIndexu = reshape(kron(edofMata(4*nelxs*nely+1:5*nelxs*nely, :),ones(8,1))',32*nelxs*nely,1);
+jIndexu = reshape(kron(edofMats,ones(1,4))',32*nelxs*nely,1);
+% 这部分仔细检查验算了，应该是对的
 
 %% 全局矩阵的拼装
 % 纯声学部分
@@ -83,6 +97,17 @@ sMa = reshape(Mae(:)*(1/kappa + (1/kappav-1/kappa)*xPhys(:))',16*nelx*nely,1);
 Ka = sparse(iIndexaa,jIndexaa,sKa); Ka = (Ka+Ka')/2;
 Ma = sparse(iIndexaa,jIndexaa,sMa); Ma = (Ma+Ma')/2;
 
+sMl = reshape(Mle(:) * (1/rhoa + (1/rhoav - 1/rhoa) * xPhys(:,1) ./ (1 + q*(1 - xPhys(:,1))))', 16*nely, 1);
+sMr = reshape(Mre(:) * (1/rhoa + (1/rhoav - 1/rhoa) * xPhys(:,nelx) ./ (1 + q*(1 - xPhys(:,nelx))))', 16*nely, 1);
+% sMl = reshape(Mle(:)*(1/rhoa + (1/rhoav-1/rhoa)*repmat(xPhys(:,1), size(xPhys,2),1)./(1+q*(1-repmat(xPhys(:,1), size(xPhys,2),1))))',16*nely,1);
+% sMr = reshape(Mre(:)*(1/rhoa + (1/rhoav-1/rhoa)*repmat(xPhys(:,nelx), size(xPhys,2),1)./(1+q*(1-repmat(xPhys(:,nelx), size(xPhys,2),1))))',16*nely,1);
+Ml = sparse(iIndexl,jIndexl,sMl,(nely+1)*(nelx+1),(nely+1)*(nelx+1)); Ml = (Ml+Ml')/2;
+Mr = sparse(iIndexr,jIndexr,sMr); Mr = (Mr+Mr')/2;
+Mi = Ml+Mr;
+
+Fa = zeros((nely+1)*(nelx+1), 1);
+Fa(1:nely+1) = [(1/rhoa + (1/rhoav-1/rhoa)*xPhys(:,1)./(1+q*(1-xPhys(:,1)))); 0]/2 + [0; (1/rhoa + (1/rhoav-1/rhoa)*xPhys(:,1)./(1+q*(1-xPhys(:,1))))]/2;
+
 % 纯力学部分
 sKs = reshape(Kse(:)*(Ev+(E-Ev)*xPhyss(:)./(1+q*(1-xPhyss(:))))',64*nelxs*nely,1);
 sMs = reshape(Mse(:)*(rhosv+(rhos-rhosv)*xPhyss(:))',64*nelxs*nely,1);
@@ -91,17 +116,42 @@ Ks = sparse(iIndexss,jIndexss,sKs); Ks = (Ks+Ks')/2;
 Ms = sparse(iIndexss,jIndexss,sMs); Ms = (Ms+Ms')/2;
 
 % 声振耦合部分
+% Sp外法向是一致的，然后他出现在等式右侧的时候自带一个负号-Sp，移到左侧会变正的
 sSp = reshape(Spe(:)*(xPhyss(:)'),32*nelxs*nely,1);
+% Su这里出负号是因为外法向冲突需要调整，实际上Su最初在等式右侧，变到左侧还会成-Su
 sSu = -reshape(Sue(:)*(xPhyss(:)'),32*nelxs*nely,1);
 
-Sp = sparse(iIndexsa,jIndexsa,sSp);
-Su = sparse(iIndexsa,jIndexsa,sSu);
+Sp = sparse(iIndexp,jIndexp,sSp,2*(nely+1)*(nelxs+1),(nely+1)*(nelx+1));
+Su = sparse(iIndexu,jIndexu,sSu,(nely+1)*(nelx+1),2*(nely+1)*(nelxs+1));
 
-K = [Ks Sp;
-    zeros(size(Ka,1),size(Ks,2)) Ka];
+% 组装大矩阵
+K = [Ka-omega^2*Ma+1i*k*Mi,-omega^2*Su;Sp,Ks-omega^2*Ms];
 
-M = [Ms zeros(size(Ms,1),size(Ma,2))
-    Su Ma];
+% 构造右侧向量
+F = [2*1i*k*pin*Fa; zeros(size(Ks, 1), 1)];
+
+% 求解合并后的方程组 A * Q = F
+Q = K \ F;
+P = reshape(Q(1:(nely+1)*(nelx+1)),nely+1,nelx+1);
+
+imagesc(real(P)); colormap(jet); colorbar; axis equal; axis off;
+
+disp(min(real(P(:))));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 %% 有限元的计算
 
