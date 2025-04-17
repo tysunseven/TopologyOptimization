@@ -34,7 +34,7 @@ L= zeros(2*(nely+1)*(nelx+1),1);       % compliant add to this
 % fixeddofs =union([1,2],2*(nely+1):2*(nely+1):2*(nely+1)*(nelx+1));%fix x of top left and y of bottom edge
 
 % BC without symmetry
-din=2*ceil((nely+1)/2)-1;dout = 2*(nelx)*(nely+1)+2*ceil((nely+1)/2)-1;
+din=2*(nely/2+1)-1;dout = 2*(nely/2+1)-1+2*(nely+1)*nelx;
 fixeddofs = union([1:2], [2*(nely+1)-1,2*(nely+1)]);
 
 F = sparse(din,1,1,2*(nely+1)*(nelx+1),1);

@@ -30,7 +30,7 @@ pin = 1;
 x = zeros(nely, nelx);   % 初始化全0矩阵
 % x(:,nelxs*4+1:nelxs*5) = volfrac;    % 将中间25列的值设为0.55
 xPhys = x;  % 过滤和Heaviside投影在之后补充
-xPhyss = xPhys(:,nelxs*4+1:nelxs*5); %把中间部分取出来
+% xPhyss = xPhys(:,nelxs*4+1:nelxs*5); %把中间部分取出来
 % imagesc(1-x); colormap(gray); clim([0 1]); axis equal; axis off;  % 测试代码
 
 %% 物理场的编号
