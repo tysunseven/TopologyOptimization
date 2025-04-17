@@ -1,8 +1,9 @@
 %% 参数设置
 %x = zeros(nely, nelx);
-x1 =  rand(10, 10);
-x2 = zeros(10, 10);
-x = [x1,x2; x2,x1']
+% x1 =  rand(10, 10);
+% x2 = zeros(10, 10);
+% x = [x1,x2; x2,x1']
+x = readmatrix('micro2.xlsx');
 figure('Position', [100 100 400 400]);
 colormap(gray);
 imagesc(1 - x);
@@ -48,7 +49,7 @@ Ka = sparse(iIndexaa,jIndexaa,sKa); Ka = (Ka+Ka')/2;
 Ma = sparse(iIndexaa,jIndexaa,sMa); Ma = (Ma+Ma')/2;
 
 %% 能带结构计算 (新增部分)
-[mu_x_all, mu_y_all, path_distance] = generate_band_path_square();
+[mu_x_all, mu_y_all, path_distance] = generate_band_path_triangle();
 
 % 特征值存储
 num_modes = 5;
@@ -88,7 +89,7 @@ disp(f);
 % disp(D);
 
 %% 能带结构可视化（原plot_band_structure功能）
-figure('Position', [100 100 800 600]);
+figure('Position', [500 100 800 600]);
 colors = lines(size(eigenvalues,2));
 
 hold on
@@ -97,9 +98,15 @@ for m = 1:size(eigenvalues,2)
         'Color', colors(m,:), 'LineWidth', 1.5)
 end
 
-% 原标注 (需修改为)
-xticks([0, 0.25, 0.5, 0.75 1]) 
-xticklabels({'Γ','X','M','','Γ'})
+% 原标注 (需修改为) 正方形
+% xticks([0, 0.25, 0.5, 0.75 1]) 
+% xticklabels({'Γ','X','M','','Γ'})
+
+%三角形
+xticks([0, 0.292893, 0.585786, 1]) 
+xticklabels({'Γ','X','M','Γ'})
+
+
 xlim([0 1])
 
 ylabel('Frequency (Hz)')
