@@ -3,7 +3,28 @@
 % x1 =  rand(10, 10);
 % x2 = zeros(10, 10);
 % x = [x1,x2; x2,x1']
-x = readmatrix('micro2.xlsx');
+%x = readmatrix('micro2.xlsx');
+
+x = imread("cellular1.jpg");
+x = x(:,:,1);
+x = x/255;
+x = 1-x;
+valid_rows = any(x, 2); % 找出包含非零元素的行
+valid_cols = any(x, 1); % 找出包含非零元素的列
+x = x(valid_rows, valid_cols);
+[m, n] = size(x);
+max_dim = max(m, n);               % 取行列最大值
+pad_x = max_dim - m;               % 需要补的行数
+pad_y = max_dim - n;               % 需要补的列数
+
+% 创建方阵并填充（补在右侧和下侧）
+x_square = zeros(max_dim, max_dim, 'like', x);
+x_square(1:m, 1:n) = x;
+x=x_square;
+x=double(x);
+disp(x);
+
+disp(class(x));
 figure('Position', [100 100 400 400]);
 colormap(gray);
 imagesc(1 - x);
@@ -15,14 +36,14 @@ drawnow;
 
 Lx = 2;
 Ly = 2;
-nelx = 20;
-nely = 20;
+nelx = size(x,1);
+nely = nelx;
 h = Lx/nelx;
 
 rho1 = 1;
-rho2 = 2;
+rho2 = 200;
 E1 = 4;
-E2 = 20;
+E2 = 2000;
 nu = 0.34;
 mu1 = E1/(2*(1+nu));
 mu2 = E2/(2*(1+nu));
@@ -52,7 +73,7 @@ Ma = sparse(iIndexaa,jIndexaa,sMa); Ma = (Ma+Ma')/2;
 [mu_x_all, mu_y_all, path_distance] = generate_band_path_triangle();
 
 % 特征值存储
-num_modes = 5;
+num_modes = 10;
 eigenvalues = zeros(length(mu_x_all), num_modes);
 
 row = [1,((nely+1)+1):(nely+1):((nelx-1)*(nely+1)+1),nelx*(nely+1)+1,(nelx*(nely+1)+2):((nelx+1)*(nely+1))];
