@@ -1,5 +1,5 @@
 %% 将目标函数和灵敏度计算提取到单独文件（compute_objective.m）
-function [f0val, df0dx, fval, dfdx] = min_single(kpoints, eigenvalues, eigenvectors, mu2, mu1, rho2, rho1, edofMata, Ke, Me, M, x, n)
+function [f0val, df0dx, fval, dfdx] = min_single(numb, kpoints, eigenvalues, eigenvectors, mu2, mu1, rho2, rho1, edofMata, Ke, Me, M, x, n)
 % 计算目标函数和灵敏度
 % 输入参数说明：
 %   boundary_points - 结构体数组，包含特征值和特征向量
@@ -10,8 +10,9 @@ function [f0val, df0dx, fval, dfdx] = min_single(kpoints, eigenvalues, eigenvect
 %   n - 设计变量总数
 
 % 提取第40个边界点的基态信息
-f = eigenvalues(40,1);
-phi = eigenvectors(40,:,1)';
+disp(kpoints(numb));
+f = eigenvalues(numb,1);
+phi = eigenvectors(numb,:,1)';
 
 % 计算灵敏度
 ceK = (mu2-mu1)*reshape(sum((phi(edofMata)*Ke).*phi(edofMata),2),size(x));

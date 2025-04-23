@@ -1,0 +1,154 @@
+function [max_mode1, min_mode2, max_mu_x_pi, max_mu_y_pi, min_mu_x_pi, min_mu_y_pi, gap]=OutOfPlaneElasticBandInverseDesignMMaVideoMaxSqrt(x,mode,num_random_points)
+Lx = 2; nelx = size(x,2); nely = nelx; h = Lx/nelx; num_modes = 5;
+rho1 = 1; rho2 = 2; E1 = 4; E2 = 20; nu = 0.34; mu1 = E1/(2*(1+nu)); mu2 = E2/(2*(1+nu));
+[space1,space2,time1,time2] = outofplaneconst();
+p = 48; q = -p;
+
+kpoint = struct(...
+    'mu_x',     0, ...          % 波矢x分量 (标量)
+    'mu_y',     0 ...           % 波矢y分量 (标量)
+);
+
+[boundary_mu_x, boundary_mu_y, path_distance] = generate_band_path_OABCOB();
+
+boundary_points = repmat(kpoint, numel(boundary_mu_x), 1);
+for i = 1:numel(boundary_mu_x)
+    boundary_points(i).mu_x = boundary_mu_x(i); boundary_points(i).mu_y = boundary_mu_y(i);
+end
+
+random_points = repmat(kpoint, num_random_points, 1);
+
+eigenvalues = zeros(length(boundary_mu_x)+num_random_points, num_modes);
+eigenvectors = zeros(length(boundary_mu_x)+num_random_points, (nelx+1)*(nely+1), num_modes);
+
+figHandles = initOptimizationFigures(x, num_modes);
+max_vals = []; min_vals = []; gap_vals = []; approxmax_vals = []; approxmin_vals = []; approxgap_vals = [];
+
+[edofMat, Ke, Me, iIndex, jIndex] = init_fem(nelx,nely,h); [row, col, fixT] = init_trans(nelx,nely);
+
+%% MMA参数
+loop = 0; change = 1;
+[m, n, xmin, xmax, xold1, xold2, low, upp, a0, a, c_MMA, d, move] = init_mma(nelx, nely, x, 1e-3);
+
+%% 循环体
+while change>0.01 || loop<20
+    loop = loop + 1; xmin = max( x(:) - move, 0 ); xmax = min( x(:) + move, 1 );
+
+
+    mu = mu1*(1-x)+mu2*x;
+    rho = rho1*(1-x)+rho2*x;
+    sKa = reshape(Ke(:)*(mu(:))',16*nelx*nely,1);
+    sMa = reshape(Me(:)*(rho(:))',16*nelx*nely,1);
+    K = sparse(iIndex,jIndex,sKa); K = (K+K')/2;
+    M = sparse(iIndex,jIndex,sMa); M = (M+M')/2;
+    
+    random_mu_x = pi * rand(num_random_points, 1); random_mu_y = pi * rand(num_random_points, 1);
+    if num_random_points > 0
+        for i = 1:numel(num_random_points)
+            random_points(i).mu_x = random_mu_x(i); random_points(i).mu_y = random_mu_y(i);
+        end
+    end
+
+    combined_points = [boundary_points; random_points];
+
+    % 并行求解能带
+    dcnmax = zeros(nely, nelx);
+    dcnplus1min = zeros(nely, nelx);
+
+    parfor i = 1:length(combined_points)
+        T = create_T(combined_points(i).mu_x, combined_points(i).mu_y, nelx, nely, row, col, fixT);
+        K_tilde = T' * K * T; M_tilde = T' * M * T;
+        [V, D] = eigs(K_tilde, M_tilde, num_modes, 'sm');
+        eigenvalues(i,:) = sort(sqrt(abs(real(diag(D)))));
+        eigenvectors(i,:,:) = T * V;
+        phi = T*V(:,mode);  psi = T*V(:,mode+1);
+        ceKmax = (mu2-mu1)*reshape(sum((phi(edofMat)*Ke).*phi(edofMat),2),nely,nelx);
+        ceMmax = (rho2-rho1)*reshape(sum((phi(edofMat)*Me).*phi(edofMat),2),nely,nelx);
+        dcnmax = dcnmax + sqrt(real(D(mode,mode)))^(p-1)*real((ceKmax-D(mode,mode)*ceMmax)/(2*sqrt(real(D(mode,mode)))*phi'*M*phi));
+        ceKmin = (mu2-mu1)*reshape(sum((psi(edofMat)*Ke).*psi(edofMat),2),nely,nelx);
+        ceMmin = (rho2-rho1)*reshape(sum((psi(edofMat)*Me).*psi(edofMat),2),nely,nelx);
+        dcnplus1min = dcnplus1min + sqrt(real(D(mode+1,mode+1)))^(q-1)*real((ceKmin-D(mode+1,mode+1)*ceMmin)/(2*sqrt(real(D(mode+1,mode+1)))*psi'*M*psi));
+    end
+    
+    [~, max_index] = max(eigenvalues(:, mode));
+    disp(max_index);
+
+    boundary_points = combined_points(1:numel(boundary_mu_x));  % 提取原始边界点
+    random_points = combined_points(numel(boundary_mu_x)+1:end);  % 提取随机点
+
+    dcnmax = dcnmax * sum(eigenvalues(:, mode).^p)^(1/p-1);
+    dcnplus1min = dcnplus1min * sum(eigenvalues(:, mode+1).^q).^(1/q-1);
+    approxmin = sum(eigenvalues(:, mode).^p).^(1/p);
+    approxmax = sum(eigenvalues(:, mode+1).^q).^(1/q);
+    c = approxmin-approxmax+20;
+    dc = dcnmax-dcnplus1min;
+    % MMA优化
+    
+    f0val = c;                                    % scalar
+    df0dx = dc(:);                                % column 
+    dv = ones(nely,nelx); 
+    fval  = (sum(x(:))/(1000*n) - 1);            % scalar volumn constrain
+    dfdx  = dv(:)'/ (0.5*n);                  % row
+
+
+    [ xmma, ~, ~, ~, ~, ~, ~, ~, ~, low, upp ] = ...
+        mmasub( m, n, loop, x(:), xmin, xmax, xold1, xold2, f0val,df0dx,fval,dfdx,low,upp,a0,a,c_MMA,d);
+    xold2 = xold1(:); xold1 = x(:); x = reshape(xmma,nely,nelx); change = max(abs(x(:)-xold1(:)));
+      
+    for l = 1:num_modes
+        set(figHandles.bandLines(l),...
+            'XData', path_distance,...
+            'YData', eigenvalues(1:numel(boundary_mu_x), l)');
+    end
+    
+
+    max_vals(end+1) = max(eigenvalues(:,mode));
+    approxmax_vals(end+1) = approxmax;
+    min_vals(end+1) = min(eigenvalues(:,mode+1));
+    approxmin_vals(end+1) = approxmin;
+    approxgap_vals(end+1) = approxmax - approxmin;
+    gap_vals(end+1) = min(eigenvalues(:,mode+1)) - max(eigenvalues(:,mode));
+
+
+    for l = 1:num_modes
+     set(figHandles.band_plots(l), 'XData', path_distance, 'YData', eigenvalues(1:numel(boundary_mu_x), l));
+    end
+
+    for i = 1:num_modes-1
+        % 提取当前模式i和i+1在所有k点中的频率
+        omega_i = eigenvalues(1:numel(boundary_mu_x), i);
+        omega_i_plus_1 = eigenvalues(1:numel(boundary_mu_x), i+1);
+        
+        % 计算全局最大值和最小值
+        max_omega_i = max(omega_i);
+        min_omega_i_p1 = min(omega_i_plus_1);
+        
+        % 判断是否存在带隙
+        if max_omega_i < min_omega_i_p1
+            % 设置Patch的Y坐标并显示
+            set(figHandles.band_gap_patches(i), 'YData', [max_omega_i, max_omega_i, min_omega_i_p1, min_omega_i_p1], 'Visible', 'on');
+        else
+            set(figHandles.band_gap_patches(i), 'Visible', 'off');
+        end
+    end
+
+    
+    % 更新密度图
+    set(figHandles.densityImage, 'CData', real(1-x));
+    
+    % 更新参数演化图
+    iterations = 1:loop;
+    set(figHandles.h_max, 'XData',iterations, 'YData',max_vals);
+    set(figHandles.h_approxmax, 'XData',iterations, 'YData',approxmax_vals);
+    set(figHandles.h_min, 'XData',iterations, 'YData',min_vals);
+    set(figHandles.h_approxmin, 'XData',iterations, 'YData',approxmin_vals);
+    set(figHandles.h_approxgap, 'XData',iterations, 'YData',approxgap_vals);
+    set(figHandles.h_realgap, 'XData',iterations, 'YData',gap_vals);
+    xlim(figHandles.ax3, [1 max(iterations)+0.5]);
+
+    drawnow limitrate;
+
+    fprintf('Iter:%4i max:%7.4f apx_max:%7.4f min:%7.4f apx_min:%7.4f Obj:%7.4f actObj:%7.4f Vol:%5.3f chg:%5.3f\n', loop, max(eigenvalues(:,mode)), approxmax, min(eigenvalues(:,mode+1)), approxmin, approxmax-approxmin, min(eigenvalues(:,mode+1))-max(eigenvalues(:,mode)), mean(x(:)), change);
+end
+
+[max_mode1, min_mode2, max_mu_x_pi, max_mu_y_pi, min_mu_x_pi, min_mu_y_pi, gap]=postFigures(mode,num_modes,nelx,nely,row,col,fixT,K,M);

@@ -1,11 +1,15 @@
-%% 参数设置
-[x, nelx, nely, Lx, Ly, h] = init_x_from_png(); [space1,space2,time1,time2] = outofplaneconst();
+function OutOfPlaneElasticBand(x)
+nelx=size(x,1);
+nely=size(x,2);
+Lx=2;
+h=Lx/nelx;
+[space1,space2,time1,time2] = outofplaneconst();
 
 num_modes = 10; num_random_points = 0;
 
 kpoint = struct( 'mu_x', 0, 'mu_y', 0 );
 
-[boundary_mu_x, boundary_mu_y, path_distance] = generate_band_path_triangle();
+[boundary_mu_x, boundary_mu_y, path_distance] = generate_band_path_OABCOB();
 
 kpoints = repmat(kpoint, numel(boundary_mu_x)+num_random_points,1);
 for i = 1:numel(boundary_mu_x)

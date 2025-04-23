@@ -1,0 +1,46 @@
+% clearvars -global
+% close all; clc;
+% 
+% timestamp = datestr(now, 'yyyymmdd_HHMMSS');
+% 
+% % output_folder = ['x_init_data_', timestamp];
+% % if ~exist(output_folder, 'dir')
+% %     mkdir(output_folder);
+% % end
+% 
+% resultTable = table('Size',[30 7],...
+%     'VariableTypes', repmat({'double'},1,7),...
+%     'VariableNames',{'max_mode1','min_mode2','max_mu_x_pi',...
+%                     'max_mu_y_pi','min_mu_x_pi','min_mu_y_pi','gap'});
+% 
+% for i = 1:10
+%     % 生成新随机初始设计变量
+%     clearvars -except output_folder resultTable i timestamp
+% 
+%     x_init = readmatrix("x_init_data_20250422_230900/rand02.xlsx");  % 确保变量名一致
+% 
+% 
+%     % x_filename = sprintf('rand%02d.xlsx', i);
+%     % writematrix(x_init, fullfile(output_folder, x_filename));
+% 
+%     % 运行优化算法
+%     [max_m1, min_m2, max_x, max_y, min_x, min_y, gap] = ...
+%         OutOfPlaneElasticBandInverseDesignMMaVideoMaxSqrt(x_init, 1, 100);
+% 
+%     % 存储结果
+%     resultTable(i,:) = {max_m1, min_m2, max_x, max_y, min_x, min_y, gap};
+% 
+%     % 显示进度
+%     fprintf('完成第%d次运行 (带隙: %.2f Hz)\n', i, gap);
+% end
+% 
+% % 保存结果到Excel（时间戳命名）
+% result_filename = sprintf('Result_%s.xlsx', timestamp);
+% writetable(resultTable, result_filename);
+
+x = rand(30,30);
+% x = readmatrix("x_init_data_20250422_230900/rand02.xlsx");
+mode = 1; num_random_points = 0;
+% OutOfPlaneElasticBand(x);
+% OutOfPlaneElasticBandInverseDesignMMa(x);
+[max_mode1, min_mode2, max_mu_x_pi, max_mu_y_pi, min_mu_x_pi, min_mu_y_pi, gap]=OutOfPlaneElasticBandInverseDesignMMaVideoMaxSqrt(x,mode,num_random_points);

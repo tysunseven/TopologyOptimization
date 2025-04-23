@@ -1,4 +1,4 @@
-function [mu_x_all, mu_y_all, path_distance] = generate_band_path_triangle()
+function [mu_x_all, mu_y_all, path_distance] = generate_band_path_OABO()
     % 第一段 Γ→X (0,0)->(pi,0)
     x1 = linspace(0, pi, 20);
     y1 = zeros(1, 20);

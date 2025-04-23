@@ -11,9 +11,7 @@ function [fig, ax_band, ax_density, band_plots, density_plot band_gap_patches] =
 %   density_plot - 密度图图像对象
 
 %% 创建图形窗口
-fig = figure('Position', [25 150 1400 600],...
-             'Name', 'Topology Optimization Monitor',...
-             'NumberTitle', 'off');
+fig = figure('Position', [25 150 1400 600]);
 
 %% ================= 能带结构子图初始化 =================
 ax_band = subplot(1,2,1);
