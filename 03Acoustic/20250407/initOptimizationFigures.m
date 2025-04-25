@@ -1,4 +1,4 @@
-function figHandles = initOptimizationFigures(x, num_modes)
+function figHandles = initOptimizationFigures(x, num_modes, xtick_pos, xtick_labels)
 % 初始化所有图形组件并返回图形句柄结构体
 
 %% 创建主图形窗口
@@ -26,8 +26,8 @@ gapLines(1) = plot(nan, nan, '--', 'Color', [0.7 0.2 0.2], 'LineWidth', 1.5);
 gapLines(2) = plot(nan, nan, '--', 'Color', [0.7 0.2 0.2], 'LineWidth', 1.5);
 
 % 坐标轴设置
-set(gca, 'XTick', [0, 0.292893, 0.585786, 1],...
-         'XTickLabel', {'Γ','X','M','Γ'},...
+set(gca, 'XTick', xtick_pos,...
+         'XTickLabel', xtick_labels,...
          'XLim', [0 1],...
          'YLim', [0 7],...
          'FontSize', 12,...
@@ -66,19 +66,19 @@ color_group2 = [0.9 0.3 0.2]; % 红色系
 marker_size = 8;
 
 % 创建绘图对象
-h_max = plot(ax3, nan, nan, 'o-', 'Color', color_group1, 'MarkerSize', marker_size);
+h_max = plot(ax3, nan, nan, 'o-', 'Color', color_group1, 'MarkerSize', marker_size,'LineWidth', 1.5);
 h_approxmax = plot(ax3, nan, nan, 's--', 'Color', color_group1, 'MarkerSize', marker_size);
-h_min = plot(ax3, nan, nan, 'o-', 'Color', color_group2, 'MarkerSize', marker_size);
+h_min = plot(ax3, nan, nan, 'o-', 'Color', color_group2, 'MarkerSize', marker_size,'LineWidth', 1.5);
 h_approxmin = plot(ax3, nan, nan, 's--', 'Color', color_group2, 'MarkerSize', marker_size);
-h_approxgap = plot(ax3, nan, nan, '^-.', 'Color', [0.4 0.8 0.3], 'MarkerSize', marker_size);
-h_realgap = plot(ax3, nan, nan, 'v:', 'Color', [0.4 0.8 0.3], 'MarkerSize', marker_size);
+h_realgap = plot(ax3, nan, nan,'o-', 'Color', '#EDB120',  'MarkerSize', marker_size,'LineWidth', 1.5);
+h_approxgap = plot(ax3, nan, nan,'s--', 'Color', '#7E2F8E','MarkerSize', marker_size);
 
 % 坐标轴设置
 xlabel(ax3, '迭代次数', 'FontWeight','bold');
 ylabel(ax3, '参数值', 'FontWeight','bold');
 title(ax3, '优化参数演化过程', 'FontSize',12);
 grid(ax3, 'on');
-legend(ax3, {'Max(ω₁)','ApproxMax(ω₁)','Min(ω₂)','ApproxMin(ω₂)','估计带隙','实际带隙'},...
+legend(ax3, {'真实最大','近似最大','真实最小','近似最小','真实带隙','近似带隙'},...
        'Location','bestoutside');
 
 %% 封装图形句柄

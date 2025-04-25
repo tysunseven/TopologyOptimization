@@ -1,46 +1,97 @@
 clearvars -global
 close all; clc;
-% 
-% timestamp = datestr(now, 'yyyymmdd_HHMMSS');
-% 
-% % output_folder = ['x_init_data_', timestamp];
-% % if ~exist(output_folder, 'dir')
-% %     mkdir(output_folder);
-% % end
-% 
-% resultTable = table('Size',[30 7],...
-%     'VariableTypes', repmat({'double'},1,7),...
-%     'VariableNames',{'max_mode1','min_mode2','max_mu_x_pi',...
-%                     'max_mu_y_pi','min_mu_x_pi','min_mu_y_pi','gap'});
-% 
-% for i = 1:10
-%     % 生成新随机初始设计变量
-%     clearvars -except output_folder resultTable i timestamp
-% 
-%     x_init = readmatrix("x_init_data_20250422_230900/rand02.xlsx");  % 确保变量名一致
-% 
-% 
-%     % x_filename = sprintf('rand%02d.xlsx', i);
-%     % writematrix(x_init, fullfile(output_folder, x_filename));
-% 
-%     % 运行优化算法
-%     [max_m1, min_m2, max_x, max_y, min_x, min_y, gap] = ...
-%         OutOfPlaneElasticBandInverseDesignMMaVideoMaxSqrt(x_init, 1, 100);
-% 
-%     % 存储结果
-%     resultTable(i,:) = {max_m1, min_m2, max_x, max_y, min_x, min_y, gap};
-% 
-%     % 显示进度
-%     fprintf('完成第%d次运行 (带隙: %.2f Hz)\n', i, gap);
-% end
-% 
-% % 保存结果到Excel（时间戳命名）
-% result_filename = sprintf('Result_%s.xlsx', timestamp);
-% writetable(resultTable, result_filename);
 
-x = rand(30,30);
-% x = readmatrix("x_init_data_20250422_230900/rand02.xlsx");
-mode = 1; num_random_points = 0;
-% OutOfPlaneElasticBand(x);
-% OutOfPlaneElasticBandInverseDesignMMa(x);
-[max_mode1, min_mode2, max_mu_x_pi, max_mu_y_pi, min_mu_x_pi, min_mu_y_pi, gap]=OutOfPlaneElasticBandInverseDesignMMaVideoMaxSqrt(x,mode,num_random_points);
+% 思路：在num_random_points = 0;的情况下随机采样很多次，然后把其中有问题的挑出来
+% for j = 1:3
+target_mode = 3; num_random_points = 30;
+
+
+timestamp = datestr(now, 'yyyymmdd_HHMMSS');
+
+% 创建文件夹 新测试集
+% output_folder = sprintf('x_init_data_mode%d_rand%d_%s',...
+%                        target_mode, num_random_points, timestamp);
+% if ~exist(output_folder, 'dir')
+%     mkdir(output_folder);
+% end
+
+% 原始数据路径
+input_folder = 'x_init_data_mode3_rand0_20250424_120046';
+
+
+% 新建结果文件夹（自动添加重试标记）
+output_folder = [input_folder '_retry2_rand30'];
+if ~exist(output_folder, 'dir')
+    mkdir(output_folder);
+end
+
+
+
+resultTable = table('Size',[30 19],...
+    'VariableTypes', [repmat({'double'},1,3),repmat({'double'},1,7), {'cell'}, repmat({'double'},1,7),{'double'}],...
+    'VariableNames',{'loop','time','avgtime','bdmax','bdmin','bdmax_x','bdmax_y','bdmin_x','bdmin_y','bdgap',...
+                    'EmptyColumn',...  % 空列占位
+                    'gbmax','gbmin','gbmax_x','gbmax_y','gbmin_x','gbmin_y','gbgap','IsBoundaryExtrema'});
+
+for i = 1:30
+    % 生成新随机初始设计变量
+    clearvars -except output_folder resultTable i timestamp target_mode num_random_points input_folder
+ 
+    % x_init = rand(30,30);
+
+    x_filename = sprintf('rand%02d.xlsx', i);
+    x_path = fullfile(input_folder, x_filename);
+    x_init = readmatrix(x_path);
+
+
+    % x_filename = sprintf('rand%02d.xlsx', i);
+    % writematrix(x_init, fullfile(output_folder, x_filename));
+
+    % 运行优化算法
+    [x_final, figure, loop, time, bdmax, bdmin, bdmax_x, bdmax_y, bdmin_x, bdmin_y, bdgap, gbmax, gbmin, gbmax_x, gbmax_y, gbmin_x, gbmin_y, gbgap] = ...
+        OutOfPlaneElasticBandInverseDesignMMaVideoMaxSqrt(x_init, target_mode, num_random_points);
+    
+    x_filename = sprintf('rand%02d_final.xlsx', i);
+    writematrix(x_final, fullfile(output_folder, x_filename));
+
+    figure_filename = sprintf('rand%02d_figure.png', i);
+    full_path = fullfile(output_folder, figure_filename);
+    saveas(figure, full_path); 
+
+    tol = 1e-6; 
+    
+    % 检查最大值位置是否相同
+    max_pos_match = (abs(bdmax_x - gbmax_x) < tol) && ...
+                   (abs(bdmax_y - gbmax_y) < tol);
+    
+    % 检查最小值位置是否相同
+    min_pos_match = (abs(bdmin_x - gbmin_x) < tol) && ...
+                   (abs(bdmin_y - gbmin_y) < tol);
+    
+    % 综合判断标识 (0:完全匹配, 1:存在不匹配)
+    is_boundary_extrema = ~(max_pos_match && min_pos_match);
+
+
+    
+    resultTable(i,:) = {loop, time, time/loop, bdmax, bdmin, bdmax_x, bdmax_y, bdmin_x, bdmin_y, bdgap,...
+                       {''},...  % 空列填充空字符串
+                       gbmax, gbmin, gbmax_x, gbmax_y, gbmin_x, gbmin_y, gbgap, is_boundary_extrema};
+end
+
+
+result_filename = sprintf('FinalResult_mode%d_rand%d_%s_retry2_rand30.xlsx',...
+                          target_mode, num_random_points, timestamp);
+writetable(resultTable, result_filename,...
+          'WriteVariableNames', true,...
+          'WriteMode', 'overwrite',...
+          'Sheet', 'Results',...
+          'Range', 'A1');
+
+% end
+
+% x = rand(30,30);
+% % x = readmatrix("x_init_data_20250422_230900/rand02.xlsx");
+% mode = 1; num_random_points = 0;
+% % OutOfPlaneElasticBand(x);
+% % OutOfPlaneElasticBandInverseDesignMMa(x);
+% [max_mode1, min_mode2, max_mu_x_pi, max_mu_y_pi, min_mu_x_pi, min_mu_y_pi, gap]=OutOfPlaneElasticBandInverseDesignMMaVideoMaxSqrt(x,mode,num_random_points);
