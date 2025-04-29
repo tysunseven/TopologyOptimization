@@ -1,29 +1,17 @@
 clearvars -global
 close all; clc;
 
-% 思路：在num_random_points = 0;的情况下随机采样很多次，然后把其中有问题的挑出来
-% for j = 1:3
-target_mode = 3; num_random_points = 0;
+
+target_mode = 1; num_random_points = 0;
+
+
 timestamp = datestr(now, 'yyyymmdd_HHMMSS');
 
-% 创建文件夹 新测试集
 output_folder = sprintf('x_init_data_mode%d_rand%d_%s',...
                        target_mode, num_random_points, timestamp);
 if ~exist(output_folder, 'dir')
     mkdir(output_folder);
 end
-% 
-% % 原始数据路径
-% input_folder = 'x_init_data_mode3_rand0_20250424_120046';
-% 
-% 
-% % 新建结果文件夹（自动添加重试标记）
-% output_folder = [input_folder '_retry2_rand30'];
-% if ~exist(output_folder, 'dir')
-%     mkdir(output_folder);
-% end
-
-
 
 resultTable = table('Size',[30 19],...
     'VariableTypes', [repmat({'double'},1,3),repmat({'double'},1,7), {'cell'}, repmat({'double'},1,7),{'double'}],...
@@ -31,15 +19,9 @@ resultTable = table('Size',[30 19],...
                     'EmptyColumn',...  % 空列占位
                     'gbmax','gbmin','gbmax_x','gbmax_y','gbmin_x','gbmin_y','gbgap','IsBoundaryExtrema'});
 
-for i = 1:100
+for i = 1:5
     % 生成新随机初始设计变量
     clearvars -except output_folder resultTable i timestamp target_mode num_random_points input_folder
-
-    
-
-    % x_filename = sprintf('rand%02d.xlsx', i);
-    % x_path = fullfile(input_folder, x_filename);
-    % x_init = readmatrix(x_path);
 
     x_init = rand(30,30);
     x_filename = sprintf('rand%02d.xlsx', i);
@@ -77,19 +59,10 @@ for i = 1:100
 end
 
 
-result_filename = sprintf('FinalResult_mode%d_rand%d_%s.xlsx',...
+result_filename = sprintf('FinalResult_mode%d_rand%d_%s_retry2_rand30.xlsx',...
                           target_mode, num_random_points, timestamp);
 writetable(resultTable, result_filename,...
           'WriteVariableNames', true,...
           'WriteMode', 'overwrite',...
           'Sheet', 'Results',...
           'Range', 'A1');
-
-% end
-
-% x = rand(128,128);
-% % x = readmatrix("x_init_data_20250422_230900/rand02.xlsx");
-% mode = 1; num_random_points = 0;
-% % OutOfPlaneElasticBand(x);
-% % OutOfPlaneElasticBandInverseDesignMMa(x);
-% [max_mode1, min_mode2, max_mu_x_pi, max_mu_y_pi, min_mu_x_pi, min_mu_y_pi, gap]=OutOfPlaneElasticBandInverseDesignMMaVideoMaxSqrt(x,mode,num_random_points);
