@@ -14,7 +14,7 @@ for i = 1:30
     x = repmat(x_init, 3, 3);
     
     % 绘制矩阵图像
-    figure;
+    fig = figure('Visible', 'off');  % <- 关键修改：隐藏图形窗口
     imagesc(1-x);                     % 显示矩阵颜色图
     colormap(gray);
     

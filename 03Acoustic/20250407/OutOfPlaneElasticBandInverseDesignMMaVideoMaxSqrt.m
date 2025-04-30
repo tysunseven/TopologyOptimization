@@ -1,6 +1,9 @@
 function [xfinal, figure, loop, time, bdmax, bdmin, bdmax_x, bdmax_y, bdmin_x, bdmin_y, bdgap,...
     gbmax, gbmin, gbmax_x, gbmax_y, gbmin_x, gbmin_y, gbgap]...
-    =OutOfPlaneElasticBandInverseDesignMMaVideoMaxSqrt(x,mode,num_random_points)
+    =OutOfPlaneElasticBandInverseDesignMMaVideoMaxSqrt(x,mode,num_random_points,output_folder,number)
+if ~exist(output_folder, 'dir')
+    mkdir(output_folder);
+end
 Lx = 2; nelx = size(x,2); nely = nelx; h = Lx/nelx; num_modes = 5; p = 48; q = -p;
 rho1 = 1; rho2 = 2; E1 = 4; E2 = 20; nu = 0.34; mu1 = E1/(2*(1+nu)); mu2 = E2/(2*(1+nu));
 kpoint = struct( 'mu_x', 0, 'mu_y', 0 );
@@ -14,6 +17,11 @@ eigenvalues = zeros(length(boundary_mu_x)+num_random_points, num_modes);
 loop = 0; change = 1; [m, n, xold1, xold2, low, upp, a0, a, c_MMA, d, move] = init_mma(nelx, nely, x, 1e-3);
 figHandles = initOptimizationFigures(x, num_modes, xtick_pos, xtick_labels);
 max_vals = []; min_vals = []; gap_vals = []; approxmax_vals = []; approxmin_vals = []; approxgap_vals = [];
+
+%% 创建Excel文件并写入表头
+filename = fullfile(output_folder, sprintf('rand%02d_history.xlsx', number));
+header = {'Iter', 'max', 'apxmax', 'min', 'apxmin', 'gap', 'apxgap', 'gbmax_x', 'gbmax_y', 'gbmin_x', 'gbmin_y', 'chg'};
+writecell(header, filename);
 %% 循环体
 tic;
 while change>0.01 || loop<20
@@ -76,9 +84,19 @@ while change>0.01 || loop<20
                               path_distance, boundary_mu_x, num_modes,...
                               apxmax, apxmin, max_vals, min_vals,...
                               approxmax_vals, approxmin_vals, approxgap_vals, gap_vals);
+    
+    [bdmax, bdmin, bdmax_x, bdmax_y, bdmin_x, bdmin_y, bdgap,...
+    gbmax, gbmin, gbmax_x, gbmax_y, gbmin_x, gbmin_y, gbgap]...
+    =postFigures(mode,num_modes,nelx,nely,row,col,fixT,K,M);
+
 
     fprintf('Iter:%4i max:%7.4f apxmax:%7.4f min:%7.4f apxmin:%7.4f gap:%7.4f apxgap:%7.4f chg:%5.3f\n', ...
         loop, max(eigenvalues(:,mode)), apxmax, min(eigenvalues(:,mode+1)), apxmin,  min(eigenvalues(:,mode+1))-max(eigenvalues(:,mode)),apxmin-apxmax,  change);
+
+    % 保存当前迭代数据到Excel
+    data_row = {loop, max(eigenvalues(:,mode)), apxmax, min(eigenvalues(:,mode+1)), apxmin, ...
+        (min(eigenvalues(:,mode+1)) - max(eigenvalues(:,mode))), (apxmin - apxmax),gbmax_x, gbmax_y, gbmin_x, gbmin_y, change};
+    writecell(data_row, filename, 'WriteMode', 'append');
 end
 time = toc;
 xfinal = x;

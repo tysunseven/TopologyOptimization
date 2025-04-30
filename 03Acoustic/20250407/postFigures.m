@@ -77,3 +77,5 @@ fprintf('第%d级特征值全局最大值: %.4f，位置: (%.3fπ, %.3fπ)\n',..
 fprintf('第%d级特征值全局最小值: %.4f，位置: (%.3fπ, %.3fπ)\n',...
         mode+1, gbmin, gbmin_x, gbmin_y);
 fprintf('全局带隙宽度: %.4f\n\n', gbgap);
+
+close;
