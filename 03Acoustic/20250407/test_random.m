@@ -1,7 +1,7 @@
 % clearvars -except opts
 % close all; clc;
 rng(0); % 固定随机种子
-y = readmatrix("x_init_data_mode1_rand0_20250424_111930/rand01.xlsx");
+y = readmatrix("round2/x_init_data_mode1_rand0_20250424_111930/rand01.xlsx");
 x = y(1:10,1:10);
 num_random_points=0; mode=3;
 Lx = 2; nelx = size(x,2); nely = nelx; h = Lx/nelx; num_modes = 5; p = 48; q = -p;
@@ -79,24 +79,33 @@ M = sparse(iIndex,jIndex,sMa); M = (M+M')/2;
 dcmax = zeros(nely, nelx); dcmin = zeros(nely, nelx);
 % length(kpoints)
 opts.v0 = ones(100,1);    % 固定初始向量
-disp(opts.v0(1));
+% disp(opts.v0(1));
 a = zeros(3,1);
-parfor i = 1:3
+parfor i = 8
     T = create_T(kpoints(i).mu_x, kpoints(i).mu_y, nelx, nely, row, col, fixT);
     K_tilde = T' * K * T; M_tilde = T' * M * T;
     [V, D] = eigs(K_tilde, M_tilde, num_modes, 'sm', opts);
-    disp(opts.v0(1));
+    % disp(opts.v0(1));
     eigenvalues(i,:) = sort(sqrt(abs(real(diag(D)))));
+    disp(diag(D(mode,mode)));
     eigenvectors(i,:,:) = T * V;
     phi = T*V(:,mode);  psi = T*V(:,mode+1);
     a(i)=phi(1);
+    disp(phi(1));
     % disp(['i=', num2str(i), ', phi(1)=', num2str(phi(1))]);
-    ceKmax = (mu2-mu1)*reshape(sum((phi(edofMat)*Ke).*phi(edofMat),2),nely,nelx);
-    ceMmax = (rho2-rho1)*reshape(sum((phi(edofMat)*Me).*phi(edofMat),2),nely,nelx);
-    dki1dx = real((ceKmax-D(mode,mode)*ceMmax)/(2*sqrt(real(D(mode,mode)))*phi'*M*phi));
+    conjphi = conj(phi);
+    ceKmax = (mu2-mu1)*reshape(sum((conjphi(edofMat)*Ke).*phi(edofMat),2),nely,nelx);
+    disp(ceKmax(1,1));
+    ceMmax = (rho2-rho1)*reshape(sum((conjphi(edofMat)*Me).*phi(edofMat),2),nely,nelx);
+    disp(ceMmax(1,1));
+    dki1dx = real((ceKmax-real(D(mode,mode))*ceMmax)/(2*sqrt(real(D(mode,mode)))*(phi'*M*phi)));
+    disp((ceKmax(1,1)-real(D(mode,mode))*ceMmax(1,1)));
+    % disp(full(M));
+    disp(phi'*M*phi);
     dcmax = dcmax + sqrt(real(D(mode,mode)))^(p-1)*dki1dx;
     % disp(full(sqrt(real(D(mode,mode)))^(p-1)*dki1dx));
-    % disp(full(dki1dx));
+    disp(i);
+    disp(full(dki1dx));
     % disp(full(real((ceKmax-D(mode,mode)*ceMmax))));
     % disp(full((2*sqrt(real(D(mode,mode)))*real(phi'*M*phi))));
     % disp(ceKmax(1,1));
@@ -105,8 +114,14 @@ parfor i = 1:3
     dki2dx = real((ceKmin-D(mode+1,mode+1)*ceMmin)/(2*sqrt(real(D(mode+1,mode+1)))*psi'*M*psi));
     dcmin = dcmin + sqrt(real(D(mode+1,mode+1)))^(q-1)*dki2dx;
 end
-disp(full(a));
-disp(dcmax(1,1));
+dcmax = dcmax * sum(eigenvalues(:, mode).^p)^(1/p-1);
+dcmin = dcmin * sum(eigenvalues(:, mode+1).^q).^(1/q-1);
+% disp(full(a));
+% disp(dcmax);
+% disp(dcmin);
+% disp(dcmax-dcmin);
+% disp(sum(eigenvalues(:, mode).^p)^(1/p-1));
+% disp(sum(eigenvalues(:, mode+1).^q).^(1/q-1)); 
 
 
 

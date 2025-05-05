@@ -49,12 +49,17 @@ while change>0.01 || loop<20
         [V, D] = eigs(K_tilde, M_tilde, num_modes, 'sm');
         eigenvalues(i,:) = sort(sqrt(abs(real(diag(D)))));
         phi = T*V(:,mode);  psi = T*V(:,mode+1);
+        conjphi = conj(phi); conjpsi = conj(psi);
         ceKmax = (mu2-mu1)*reshape(sum((phi(edofMat)*Ke).*phi(edofMat),2),nely,nelx);
         ceMmax = (rho2-rho1)*reshape(sum((phi(edofMat)*Me).*phi(edofMat),2),nely,nelx);
+        % ceKmax = (mu2-mu1)*reshape(sum((conjphi(edofMat)*Ke).*phi(edofMat),2),nely,nelx);
+        % ceMmax = (rho2-rho1)*reshape(sum((conjphi(edofMat)*Me).*phi(edofMat),2),nely,nelx);
         dki1dx = real((ceKmax-D(mode,mode)*ceMmax)/(2*sqrt(real(D(mode,mode)))*phi'*M*phi));
         dcmax = dcmax + sqrt(real(D(mode,mode)))^(p-1)*dki1dx;
         ceKmin = (mu2-mu1)*reshape(sum((psi(edofMat)*Ke).*psi(edofMat),2),nely,nelx);
         ceMmin = (rho2-rho1)*reshape(sum((psi(edofMat)*Me).*psi(edofMat),2),nely,nelx);
+        % ceKmin = (mu2-mu1)*reshape(sum((conjpsi(edofMat)*Ke).*psi(edofMat),2),nely,nelx);
+        % ceMmin = (rho2-rho1)*reshape(sum((conjpsi(edofMat)*Me).*psi(edofMat),2),nely,nelx);
         dki2dx = real((ceKmin-D(mode+1,mode+1)*ceMmin)/(2*sqrt(real(D(mode+1,mode+1)))*psi'*M*psi));
         dcmin = dcmin + sqrt(real(D(mode+1,mode+1)))^(q-1)*dki2dx;
     end
@@ -85,10 +90,10 @@ while change>0.01 || loop<20
                               apxmax, apxmin, max_vals, min_vals,...
                               approxmax_vals, approxmin_vals, approxgap_vals, gap_vals);
     
-    [bdmax, bdmin, bdmax_x, bdmax_y, bdmin_x, bdmin_y, bdgap,...
-    gbmax, gbmin, gbmax_x, gbmax_y, gbmin_x, gbmin_y, gbgap]...
-    =postFigures(mode,num_modes,nelx,nely,row,col,fixT,K,M);
-
+    % [bdmax, bdmin, bdmax_x, bdmax_y, bdmin_x, bdmin_y, bdgap,...
+    % gbmax, gbmin, gbmax_x, gbmax_y, gbmin_x, gbmin_y, gbgap]...
+    % =postFigures(mode,num_modes,nelx,nely,row,col,fixT,K,M);
+    gbmax_x = 1; gbmax_y = 1; gbmin_x = 1; gbmin_y = 1;
 
     fprintf('Iter:%4i max:%7.4f apxmax:%7.4f min:%7.4f apxmin:%7.4f gap:%7.4f apxgap:%7.4f chg:%5.3f\n', ...
         loop, max(eigenvalues(:,mode)), apxmax, min(eigenvalues(:,mode+1)), apxmin,  min(eigenvalues(:,mode+1))-max(eigenvalues(:,mode)),apxmin-apxmax,  change);
