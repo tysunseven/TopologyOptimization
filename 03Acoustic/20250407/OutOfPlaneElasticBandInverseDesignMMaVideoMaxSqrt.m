@@ -4,7 +4,7 @@ function [xfinal, figure, loop, time, bdmax, bdmin, bdmax_x, bdmax_y, bdmin_x, b
 if ~exist(output_folder, 'dir')
     mkdir(output_folder);
 end
-Lx = 2; nelx = size(x,2); nely = nelx; h = Lx/nelx; num_modes = 5; p = 48; q = -p;
+Lx = 2; nelx = size(x,2); nely = nelx; h = Lx/nelx; num_modes = 6; p = 48; q = -p;
 rho1 = 1; rho2 = 2; E1 = 4; E2 = 20; nu = 0.34; mu1 = E1/(2*(1+nu)); mu2 = E2/(2*(1+nu));
 kpoint = struct( 'mu_x', 0, 'mu_y', 0 );
 [boundary_mu_x, boundary_mu_y, path_distance,xtick_pos, xtick_labels] = generate_band_path_OABCOB();
@@ -52,14 +52,14 @@ while change>0.01 || loop<20
         conjphi = conj(phi); conjpsi = conj(psi);
         ceKmax = (mu2-mu1)*reshape(sum((phi(edofMat)*Ke).*phi(edofMat),2),nely,nelx);
         ceMmax = (rho2-rho1)*reshape(sum((phi(edofMat)*Me).*phi(edofMat),2),nely,nelx);
-        % ceKmax = (mu2-mu1)*reshape(sum((conjphi(edofMat)*Ke).*phi(edofMat),2),nely,nelx);
-        % ceMmax = (rho2-rho1)*reshape(sum((conjphi(edofMat)*Me).*phi(edofMat),2),nely,nelx);
+        ceKmax = (mu2-mu1)*reshape(sum((conjphi(edofMat)*Ke).*phi(edofMat),2),nely,nelx);
+        ceMmax = (rho2-rho1)*reshape(sum((conjphi(edofMat)*Me).*phi(edofMat),2),nely,nelx);
         dki1dx = real((ceKmax-D(mode,mode)*ceMmax)/(2*sqrt(real(D(mode,mode)))*phi'*M*phi));
         dcmax = dcmax + sqrt(real(D(mode,mode)))^(p-1)*dki1dx;
         ceKmin = (mu2-mu1)*reshape(sum((psi(edofMat)*Ke).*psi(edofMat),2),nely,nelx);
         ceMmin = (rho2-rho1)*reshape(sum((psi(edofMat)*Me).*psi(edofMat),2),nely,nelx);
-        % ceKmin = (mu2-mu1)*reshape(sum((conjpsi(edofMat)*Ke).*psi(edofMat),2),nely,nelx);
-        % ceMmin = (rho2-rho1)*reshape(sum((conjpsi(edofMat)*Me).*psi(edofMat),2),nely,nelx);
+        ceKmin = (mu2-mu1)*reshape(sum((conjpsi(edofMat)*Ke).*psi(edofMat),2),nely,nelx);
+        ceMmin = (rho2-rho1)*reshape(sum((conjpsi(edofMat)*Me).*psi(edofMat),2),nely,nelx);
         dki2dx = real((ceKmin-D(mode+1,mode+1)*ceMmin)/(2*sqrt(real(D(mode+1,mode+1)))*psi'*M*psi));
         dcmin = dcmin + sqrt(real(D(mode+1,mode+1)))^(q-1)*dki2dx;
     end

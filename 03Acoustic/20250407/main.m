@@ -1,7 +1,7 @@
 clearvars -global; close all; clc;
-for j = 3:3
+for j = 5:5
 timestamp = char(datetime('now', 'Format', 'yyyyMMdd_HHmmss'));
-target_mode = j; num_random_points = 0; num_examples = 30; nelx = 32;
+target_mode = j; num_random_points = 30; num_examples = 30; nelx = 32;
 
 % % 如果是随机生成初始
 % output_folder = sprintf('x_init_data_mode%d_rand%d_nelx%d_%s', target_mode, num_random_points, nelx, timestamp); mkdir(output_folder);
